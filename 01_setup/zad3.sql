@@ -10,7 +10,7 @@ COMMENT ON TABLE ksiegowosc.pracownicy IS 'Dane pracownikow: id, imie, nazwisko,
 CREATE TABLE ksiegowosc.godziny (
     id_godziny SERIAL PRIMARY KEY,
     data DATE,
-    liczba_godzin NUMERIC(4,2),
+    liczba_godzin NUMERIC(4,4),
     id_pracownika INT,
     FOREIGN KEY (id_pracownika) REFERENCES ksiegowosc.pracownicy(id_pracownika)
 );
@@ -43,3 +43,4 @@ CREATE TABLE ksiegowosc.wynagrodzenie (
     FOREIGN KEY (id_premii) REFERENCES ksiegowosc.premia(id_premii)
 );
 COMMENT ON TABLE ksiegowosc.wynagrodzenie IS 'Dane wynagrodzen:  id_wynagrodzenia, data, id_pracownika, id_godziny, id_pensji, id_premii';
+

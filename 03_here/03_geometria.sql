@@ -91,6 +91,53 @@ ST_GeomFromText(
 SELECT * FROM obiekty;
 
 
+-- ZADANIA
+-- 2 Wyznacz pole powierzchni bufora o wielkości 5 jednostek, który został utworzony wokół najkrótszej linii łączącej obiekt 3 i 4.
 
--- 2
+SELECT ST_Area(
+    ST_Buffer(
+        ST_ShortestLine(a.geometria, b.geometria), 5
+    )
+)
+FROM obiekty a, obiekty b
+WHERE a.nazwa = 'obiekt3' AND b.nazwa = 'obiekt4';
+
+
+-- 3 Zamień obiekt4 na poligon. Jaki warunek musi być spełniony, aby można było wykonać to zadanie? Zapewnij te warunki.
+
+UPDATE obiekty
+SET geometria = ST_MakePolygon(
+    ST_AddPoint( -- dodaje punkt poczatkowy na koncu aby zamknac ksztalt - warunkiem jest obiekt zamkniety
+        ST_LineMerge(geometria),
+        ST_StartPoint(ST_LineMerge(geometria))
+    )
+)
+WHERE nazwa = 'obiekt4';
+
+
+SELECT * FROM obiekty;
+
+
+-- 4 W tabeli obiekty, jako obiekt7 zapisz obiekt złożony z obiektu 3 i obiektu 4.
+
+INSERT INTO obiekty (nazwa, geometria)
+SELECT 
+    'obiekt7', 
+    ST_Union(g3.geometria, g4.geometria)
+FROM obiekty AS g3, obiekty as g4
+WHERE g3.nazwa = 'obiekt3' AND g4.nazwa = 'obiekt4'
+AND NOT EXISTS (
+      SELECT * FROM obiekty WHERE nazwa = 'obiekt7'
+  );
+
+SELECT * FROM obiekty;
+
+
+-- 5 Wyznacz pole powierzchni wszystkich buforów o wielkości 5 jednostek, które zostały utworzone wokół obiektów bez łuków.
+
+SELECT nazwa, 
+		ST_Area(ST_Buffer(geometria, 5)) AS pole_bufora
+FROM obiekty
+WHERE NOT ST_HasArc(geometria);
+
 
